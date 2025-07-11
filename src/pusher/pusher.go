@@ -118,7 +118,7 @@ func (s *Service) tryPush() (affected int, err error) {
 			}
 			if err = s.sendText(tbot, tgID, push.Text, push.InlineButtons); err != nil {
 				log.Printf("Error sending text to %d: %s", tgID, err)
-				push.SetStatusError(s.dbService)
+				//push.SetStatusError(s.dbService)
 				continue
 			}
 		case "photo":
@@ -132,7 +132,7 @@ func (s *Service) tryPush() (affected int, err error) {
 			}
 			if err = s.sendPhoto(tbot, push.InlineButtons, tgID, push.Text, push.ImageURL); err != nil {
 				log.Printf("Error sending photo to %d: %s", tgID, err)
-				push.SetStatusError(s.dbService)
+				//push.SetStatusError(s.dbService)
 				continue
 			}
 		case "video":
@@ -146,7 +146,7 @@ func (s *Service) tryPush() (affected int, err error) {
 			}
 			if err = s.sendVideo(tbot, push.InlineButtons, tgID, push.Text, push.ImageURL); err != nil {
 				log.Printf("Error sending photo to %d: %s", tgID, err)
-				push.SetStatusError(s.dbService)
+				//push.SetStatusError(s.dbService)
 				continue
 			}
 		default:
