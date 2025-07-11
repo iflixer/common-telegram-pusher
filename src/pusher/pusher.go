@@ -87,6 +87,11 @@ func (s *Service) tryPush() (affected int, err error) {
 			channel := &database.TelegramChannel{}
 			channel.Load(s.dbService, audience.ChannelID)
 			targetTelegramIDs = append(targetTelegramIDs, channel.TgID)
+			// set done status immediately if channel is used
+			if err = push.SetStatusDone(s.dbService, 1); err != nil {
+				log.Printf("Error setting status to done for push id %d: %s", push.ID, err)
+				return 0, err
+			}
 		}
 	default:
 		return 0, fmt.Errorf("audienceType not defined or not supported: %d", audience.Type)
@@ -146,11 +151,14 @@ func (s *Service) tryPush() (affected int, err error) {
 		default:
 			return 0, errors.New("push type not defined or not supported: " + push.Type)
 		}
-		//TODO: save push error status to db
-		push.SetStatusDone(s.dbService, 1)
 	}
 
 	affected = len(targetTelegramIDs)
+	log.Printf("Push %d affected, saving...", affected)
+	if err = push.SetStatusDone(s.dbService, affected); err != nil {
+		log.Printf("Error setting status to done for push id %d: %s", push.ID, err)
+		return 0, err
+	}
 
 	return
 

@@ -57,3 +57,8 @@ func (c *TelegramPush) SetStatusDone(dbService *Service, affected int) (err erro
 	c.EndAt = &now
 	return c.save(dbService)
 }
+
+func (c *TelegramPush) UpdateAffected(dbService *Service, affected int) (err error) {
+	c.Affected = affected
+	return c.save(dbService)
+}
