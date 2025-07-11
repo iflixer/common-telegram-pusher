@@ -77,6 +77,7 @@ func (s *Service) tryPush() (affected int, err error) {
 				push.SetStatusDone(s.dbService)
 				return
 			}
+			affected = len(users)
 			log.Printf("Found %d users for query: %s", len(users), audience.Query)
 			for _, user := range users {
 				targetTelegramIDs = append(targetTelegramIDs, user.TgID)
