@@ -20,3 +20,10 @@ type TelegramUser struct {
 func (c *TelegramUser) TableName() string {
 	return "telegram_user"
 }
+
+func UpdateUsersPushID(dbService *Service, userIds []int64, pushID int) (err error) {
+	if len(userIds) == 0 {
+		return nil
+	}
+	return dbService.DB.Model(&TelegramUser{}).Where("tg_id IN (?)", userIds).Update("push_id", pushID).Error
+}

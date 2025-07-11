@@ -74,13 +74,14 @@ func (s *Service) tryPush() (affected int, err error) {
 			}
 			if len(users) == 0 {
 				log.Println("No users found for query:", audience.Query)
-				push.SetStatusDone(s.dbService, 1)
+				push.SetStatusDone(s.dbService)
 				return
 			}
 			log.Printf("Found %d users for query: %s", len(users), audience.Query)
 			for _, user := range users {
 				targetTelegramIDs = append(targetTelegramIDs, user.TgID)
 			}
+			database.UpdateUsersPushID(s.dbService, targetTelegramIDs, push.ID)
 		}
 	case database.AudienceTypeChannel:
 		if audience.ChannelID != 0 {
@@ -88,7 +89,7 @@ func (s *Service) tryPush() (affected int, err error) {
 			channel.Load(s.dbService, audience.ChannelID)
 			targetTelegramIDs = append(targetTelegramIDs, channel.TgID)
 			// set done status immediately if channel is used
-			if err = push.SetStatusDone(s.dbService, 1); err != nil {
+			if err = push.SetStatusDone(s.dbService); err != nil {
 				log.Printf("Error setting status to done for push id %d: %s", push.ID, err)
 				return 0, err
 			}
@@ -151,13 +152,6 @@ func (s *Service) tryPush() (affected int, err error) {
 		default:
 			return 0, errors.New("push type not defined or not supported: " + push.Type)
 		}
-	}
-
-	affected = len(targetTelegramIDs)
-	log.Printf("Push %d affected, saving...", affected)
-	if err = push.SetStatusDone(s.dbService, affected); err != nil {
-		log.Printf("Error setting status to done for push id %d: %s", push.ID, err)
-		return 0, err
 	}
 
 	return

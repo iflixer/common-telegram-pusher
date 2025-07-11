@@ -50,9 +50,8 @@ func (c *TelegramPush) SetStatusError(dbService *Service) (err error) {
 	return c.save(dbService)
 }
 
-func (c *TelegramPush) SetStatusDone(dbService *Service, affected int) (err error) {
+func (c *TelegramPush) SetStatusDone(dbService *Service) (err error) {
 	c.Status = "done"
-	c.Affected = affected
 	now := time.Now().UTC()
 	c.EndAt = &now
 	return c.save(dbService)
