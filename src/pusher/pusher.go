@@ -78,7 +78,8 @@ func (s *Service) tryPush() (affected int, err error) {
 				return
 			}
 			affected = len(users)
-			log.Printf("Found %d users for query: %s", len(users), audience.Query)
+			log.Printf("Found %d users for query: %s", affected, audience.Query)
+			push.UpdateAffected(s.dbService, 0, affected)
 			for _, user := range users {
 				targetTelegramIDs = append(targetTelegramIDs, user.TgID)
 			}
@@ -94,6 +95,7 @@ func (s *Service) tryPush() (affected int, err error) {
 				log.Printf("Error setting status to done for push id %d: %s", push.ID, err)
 				return 0, err
 			}
+			push.UpdateAffected(s.dbService, 1, 0)
 		}
 	default:
 		return 0, fmt.Errorf("audienceType not defined or not supported: %d", audience.Type)

@@ -57,7 +57,13 @@ func (c *TelegramPush) SetStatusDone(dbService *Service) (err error) {
 	return c.save(dbService)
 }
 
-func (c *TelegramPush) UpdateAffected(dbService *Service, affected int) (err error) {
-	c.Affected = affected
+func (c *TelegramPush) UpdateAffected(dbService *Service, affected int, increase int) (err error) {
+	if increase > 0 {
+		c.Affected += increase
+	} else if affected > 0 {
+		c.Affected = affected
+	} else {
+		return nil // No change in affected count
+	}
 	return c.save(dbService)
 }
